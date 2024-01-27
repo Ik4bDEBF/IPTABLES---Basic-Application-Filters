@@ -31,7 +31,7 @@ net.core.rmem_max = 999999999
 net.core.netdev_max_backlog = 999999999
 net.netfilter.nf_conntrack_max = 99999999
 net.netfilter.nf_conntrack_tcp_loose = 0
-net.netfilter.nf_conntrack_tcp_timeout_syn_recv = 15
+net.netfilter.nf_conntrack_tcp_timeout_syn_recv = 30
 
 #save and exit
 
