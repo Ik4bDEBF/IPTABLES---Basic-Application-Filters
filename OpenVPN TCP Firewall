@@ -45,7 +45,7 @@ iptables -t mangle -I PREROUTING 3 -p tcp --dport $vpn_port -m bpf --bytecode "3
 iptables -t mangle -I PREROUTING 4 -p tcp --dport $vpn_port -m connmark ! --mark 69 -j DROP
 iptables -t mangle -I PREROUTING 5 -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 iptables -t mangle -P PREROUTING DROP
-iptables -t mangle -I INPUT ! -s $admin_ip -p tcp --dport 22 -j DROP
+iptables -t mangle -I INPUT ! -s $admin_ip -p tcp --dport $ssh_port -j DROP
 iptables -t mangle -I POSTROUTING -p tcp --sport $vpn_port -m bpf --bytecode "35,48 0 0 0,84 0 0 240,21 0 31 64,48 0 0 9,21 0 29 6,40 0 0 6,69 27 0 8191,177 0 0 0,80 0 0 13,21 0 24 24,40 0 0 2,21 0 10 108,72 0 0 20,37 0 20 48,53 19 0 80,80 0 0 22,21 0 17 64,64 0 0 31,37 15 0 3,80 0 0 35,37 0 13 96,53 12 11 112,21 0 11 120,72 0 0 32,37 0 9 48,53 8 0 80,80 0 0 34,21 0 6 64,64 0 0 43,37 4 0 3,80 0 0 47,37 0 2 96,53 1 0 70,6 0 0 262144,6 0 0 0" -m recent --name vpn --rdest --set -j CONNMARK --set-mark 69
 iptables -t nat -I POSTROUTING -s 10.8.0.0/24 ! -d 10.8.0.0/24 -j SNAT --to-source $vpn_ip
 
