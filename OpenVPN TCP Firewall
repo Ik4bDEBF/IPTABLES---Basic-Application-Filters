@@ -40,7 +40,7 @@ sysctl -p
 #Control + F to replace the following: $public_interface, $vpn_ip, $ssh_port, $vpn_port, $admin_ip, (optional: $failover1, $failover2, $failover3, etc.)
 
 iptables -t mangle -I PREROUTING ! -i $public_interface -j ACCEPT
-iptables -t mangle -I PREROUTING 2 -d $vpn_ip -p tcp -m multiport --dports $ssh_port,$vpn_port --syn -m hashlimit --hashlimit-name syn --hashlimit-mode srcip --hashlimit-upto 5/s --hashlimit-burst 1 -j ACCEPT
+iptables -t mangle -I PREROUTING 2 -d $vpn_ip -p tcp -m multiport --dports $ssh_port,$vpn_port --syn -m conntrack --ctstate NEW -m hashlimit --hashlimit-name syn --hashlimit-mode srcip --hashlimit-upto 5/s --hashlimit-burst 1 -j ACCEPT
 iptables -t mangle -I PREROUTING 3 -p tcp --dport $vpn_port -m bpf --bytecode "35,48 0 0 0,84 0 0 240,21 0 31 64,48 0 0 9,21 0 29 6,40 0 0 6,69 27 0 8191,177 0 0 0,80 0 0 13,21 0 24 24,40 0 0 2,21 0 10 96,72 0 0 20,37 0 20 48,53 19 0 69,80 0 0 22,21 0 17 56,64 0 0 31,37 15 0 3,80 0 0 35,37 0 13 96,53 12 11 112,21 0 11 108,72 0 0 32,37 0 9 48,53 8 0 69,80 0 0 34,21 0 6 56,64 0 0 43,37 4 0 3,80 0 0 47,37 0 2 96,53 1 0 70,6 0 0 262144,6 0 0 0" -m conntrack --ctstate ESTABLISHED -m hashlimit --hashlimit-name clientv2 --hashlimit-mode srcip --hashlimit-upto 1/s --hashlimit-burst 1/s -j ACCEPT
 iptables -t mangle -I PREROUTING 4 -p tcp --dport $vpn_port -m connmark ! --mark 69 -j DROP
 iptables -t mangle -I PREROUTING 5 -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
